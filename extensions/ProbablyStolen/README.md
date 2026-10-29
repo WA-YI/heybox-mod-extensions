@@ -13,7 +13,9 @@ Steam 路径仅通过游戏本体 AppID `4348910` 查询。非 Steam 安装或�
 - [MelonLoader 官方发行页](https://github.com/LavaGang/MelonLoader/releases)：选择 `MelonLoader.x64.zip`。已用 0.7.3 官方包核对目录结构。普通裸 DLL 默认按 MelonLoader 模组处理。
 - [BepInEx 官方构建页](https://builds.bepinex.dev/projects/bepinex_be)：选择 `Unity.IL2CPP-win-x64`，不是 Mono/BepInEx 5。已用 `6.0.0-be.791+b782da4` 官方包核对结构。BepInEx 插件必须带 `BepInEx/plugins/` 路径。
 
-适配器不会自动下载预载器，不绑定未经确认的小黑盒前置模组 ID。安装另一种预载器前需禁用或移除原预载器；不要同时启用两个独立预载器。安装时会检查当前目录中的另一种注入 DLL，但不能阻止用户之后在管理器外手动混装或重新启用已有前置。
+MelonLoader 0.7.3 x64 已绑定小黑盒模组 `129002`，显示“前置模组”标记。首次设置游戏或调用 `getExtensionRequiredMods` 时，缺少预载器会返回 `EXTENSION_REQUIRED_MODS_MISSING`，由管理器提示安装并启用该模组。检测到手动安装且文件齐备的 MelonLoader 时不会重复提示。
+
+完整的 BepInEx 6 IL2CPP 安装作为替代方案，不强制再安装 MelonLoader；BepInEx 插件仍需与该预载器匹配。检测到双预载器或残留的不完整 BepInEx 注入时，提示先修复冲突。安装另一种预载器前需禁用或移除原预载器；不要同时启用两个独立预载器。安装时会检查当前目录中的另一种注入 DLL，但不能阻止用户之后在管理器外手动混装或重新启用已有前置。
 
 `getLoaderStatus` 扩展动作返回所选路径、两种预载器必需文件的缺失清单以及注入 DLL 冲突状态。`installed` 仅表示文件齐备，不表示运行成功。该动作优先使用 `setup` 收到的手动目录。
 

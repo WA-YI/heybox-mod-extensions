@@ -1,6 +1,7 @@
 import type { IExtensionContext } from 'heybox-mod-api'
 
 const GAME_ID = 4348910
+const MELONLOADER_REQUIREMENT_MOD_ID = '129002'
 const EXECUTABLE = 'Probably Stolen.exe'
 const REQUIRED_GAME_FILES = [EXECUTABLE, 'UnityPlayer.dll', 'GameAssembly.dll',
   'Probably Stolen_Data/il2cpp_data/Metadata/global-metadata.dat']
@@ -135,6 +136,26 @@ export default async function main(context: IExtensionContext): Promise<boolean>
     return { gamePath: gamePath ?? '', melonloader, bepinex,
       conflict: melonloader.injectorPresent && bepinex.injectorPresent }
   }
+  const getExtensionRequiredMods = async () => {
+    const status = await getLoaderStatus()
+    if (status.conflict) throw new Error('检测到 MelonLoader 和 BepInEx 同时启用，请只保留一种预载器。')
+    if (status.bepinex.injectorPresent && !status.bepinex.installed)
+      throw new Error('检测到不完整的 BepInEx 安装，请先修复或移除，再安装 MelonLoader。')
+    // An explicitly installed BepInEx runtime is an alternative, not a reason to install both loaders.
+    const requirements = status.melonloader.installed || status.bepinex.installed ? [] : [{
+      key: 'probably-stolen-melonloader',
+      name: 'MelonLoader 0.7.3 (x64)',
+      modId: MELONLOADER_REQUIREMENT_MOD_ID,
+      mod_id: MELONLOADER_REQUIREMENT_MOD_ID,
+      modType: modType('melonloader'),
+      openModDetailDialog: false,
+      requirement: 'enabled',
+    }]
+    const result = { installed: requirements.length === 0, gamePath: status.gamePath, requirements }
+    if (result.installed) return result
+    return { ...result, code: 'EXTENSION_REQUIRED_MODS_MISSING',
+      requirement: { code: 'EXTENSION_REQUIRED_MODS_MISSING', requirements } }
+  }
   context.registerGame({
     id: GAME_ID, name: 'Probably Stolen',
     executable: EXECUTABLE, requiredFiles: REQUIRED_GAME_FILES, queryPath: findGamePath,
@@ -142,8 +163,10 @@ export default async function main(context: IExtensionContext): Promise<boolean>
       const candidate = discovery?.path || discovery?.gamePath
       if (candidate && !await validGame(candidate)) throw new Error('请选择包含 Probably Stolen.exe 的 IL2CPP 游戏目录。')
       selectedPath = candidate || await findGamePath()
-      return getLoaderStatus()
+      return getExtensionRequiredMods()
     },
+    localModFeatures: [{ modId: Number(MELONLOADER_REQUIREMENT_MOD_ID), marked: true,
+      mark: { type: 'prerequisite', label: '前置模组' } }],
     environment: { SteamAPPId: String(GAME_ID) }, details: { steamAppId: GAME_ID },
   })
   const supportedGame = (id: string | number) => String(id) === String(GAME_ID)
@@ -167,5 +190,6 @@ export default async function main(context: IExtensionContext): Promise<boolean>
     (files, id) => ({ supported: supportedGame(id) && modInstructions(files).length > 0 }),
     files => ({ instructions: modInstructions(files), modType: modType('mods') }))
   context.registerExtensionAction(GAME_ID, 'getLoaderStatus', getLoaderStatus)
+  context.registerExtensionAction(GAME_ID, 'getExtensionRequiredMods', getExtensionRequiredMods)
   return true
 }
