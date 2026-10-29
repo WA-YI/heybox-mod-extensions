@@ -45,7 +45,7 @@ pnpm lint
 pnpm build
 ```
 
-使用仓库统一构建工具，输出到 `extensions/ProbablyStolen/dist/ProbablyStolen/`，清单自动补齐 `api_version: 1.17.0`。构建产物不提交，根目录的发布制品由合并后的 CI 生成。
+使用仓库统一构建工具，输出到 `extensions/ProbablyStolen/dist/ProbablyStolen/`，清单自动补齐 `api_version: 1.17.0`。本扩展附带该目录的构建产物供开发者选项直接加载；修改源码后需重新构建并同步提交。根目录的发布制品仍由合并后的 CI 生成。
 
 ## 验证边界（2026-10-29）
 
