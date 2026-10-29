@@ -4,7 +4,7 @@
 
 ## 使用
 
-在管理器的 Probably Stolen（`4348910`）下配置 developer extension，选择本目录的 `dist/ProbablyStolen/index.cjs`。
+在管理器的 Probably Stolen（`4348910`）下配置 developer extension，选择仓库根目录的 `dist/ProbablyStolen/index.cjs`。
 
 Steam 路径仅通过游戏本体 AppID `4348910` 查询。非 Steam 安装或无法自动发现时，手动选择包含 `Probably Stolen.exe` 的目录。
 
@@ -36,16 +36,16 @@ MelonLoader 0.7.3 x64 已绑定小黑盒模组 `129002`，显示“前置模组�
 
 ## 构建与校验
 
-仓库根目录安装依赖后，在扩展目录执行类型检查和本地构建：
+仓库根目录安装依赖后，在扩展目录执行类型检查和发布产物构建：
 
 ```powershell
 pnpm install
 cd extensions/ProbablyStolen
 pnpm lint
-pnpm build
+pnpm build:extension
 ```
 
-使用仓库统一构建工具，输出到 `extensions/ProbablyStolen/dist/ProbablyStolen/`，清单自动补齐 `api_version: 1.17.0`。本扩展附带该目录的构建产物供开发者选项直接加载；修改源码后需重新构建并同步提交。根目录的发布制品仍由合并后的 CI 生成。
+使用仓库统一构建工具，输出到根目录的 `dist/ProbablyStolen/`，与 `extensions/` 同级，清单自动补齐 `api_version: 1.17.0`。修改源码后需重新构建并同步提交该产物。`pnpm build` 生成的 `extensions/ProbablyStolen/dist/` 仅用于本地开发，不提交。
 
 ## 验证边界（2026-10-29）
 
